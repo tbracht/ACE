@@ -6,14 +6,17 @@ requires = ["scikit-build-core>=0.9", "nanobind>=2.0"]
 build-backend = "scikit_build_core.build"
 
 [project]
-name = "ACE"
+name = "ACE_test_tbracht"
 version = "1.0.0"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 description = "ACE: process tensor approach to open quantum systems"
 # Uncomment and fill in as needed:
-# license = { text = "MIT" }
-# authors = [{ name = "Your Name", email = "you@example.com" }]
-# readme = "README.md"
+license = "MIT"
+authors = [{ name = "Thomas", email = "you@example.com" }]
+readme = "README.md"
+dependencies = [
+    "numpy"
+]
 
 [tool.scikit-build]
 cmake.build-type = "Release"
@@ -36,8 +39,8 @@ archs = ["x86_64"]
 
 [tool.cibuildwheel.macos]
 before-all = "brew install eigen || true"
-archs = ["x86_64", "arm64"]
-environment = { MACOSX_DEPLOYMENT_TARGET = "10.13" }
+archs = ["arm64"]
+environment = { MACOSX_DEPLOYMENT_TARGET = "11" }
 
 [tool.cibuildwheel.windows]
 # Eigen is fetched automatically by FetchContent if not found via find_package.

@@ -1,0 +1,51 @@
+name: Build wheels
+
+on:
+  push:
+    tags: ["v*"]        # run on version tags: git tag v1.0.0 && git push --tags
+  workflow_dispatch:    # allow manual trigger from the GitHub UI
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  build_wheels:
+    name: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4.2.2
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.21
+        # All cibuildwheel settings live in pyproject.toml [tool.cibuildwheel].
+
+      - uses: actions/upload-artifact@v4.6.2
+        with:
+          name: wheels-${{ matrix.os }}
+          path: ./wheelhouse/*.whl
+
+  # ── Upload to PyPI ──────────────────────────────────────
+  upload_pypi:
+    needs: build_wheels
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/ACE_test_tbracht
+    permissions:
+      id-token: write   # required for OIDC trusted publishing (no API token needed)
+
+    steps:
+      - uses: actions/download-artifact@v4.2.1
+        with:
+          pattern: wheels-*
+          merge-multiple: true
+          path: dist/
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://upload.test.pypi.org/legacy/
