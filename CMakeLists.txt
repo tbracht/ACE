@@ -19,6 +19,12 @@ endif()
 # ── Dependencies ──────────────────────────────────────────────────────────────
 find_package(Threads REQUIRED)
 
+# On Windows (MSVC and MinGW) M_PI is not defined without this. Apply globally so every
+# target (library, executables, tools, Python module) sees them.
+if(WIN32)
+  add_compile_definitions(_USE_MATH_DEFINES NOMINMAX)
+endif()
+
 # Eigen3: try cmake config/module first, then fall back to EIGEN_HOME
 find_package(Eigen3 3.4 QUIET)
 if (Eigen3_FOUND)
@@ -67,13 +73,6 @@ target_compile_options(ACE_objects PRIVATE
   $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-fno-math-errno>
   $<$<NOT:$<OR:$<CXX_COMPILER_ID:Intel>,$<CXX_COMPILER_ID:MSVC>>>:-Wno-ignored-attributes>
   $<$<CXX_COMPILER_ID:MSVC>:/EHsc /utf-8>)
-
-target_compile_definitions(ACE_objects PRIVATE
-  # M_PI and friends; needed on MSVC and MinGW (MSYS2) where they are
-  # not exposed without this define.
-  $<$<BOOL:${WIN32}>:_USE_MATH_DEFINES>
-  # Prevent windows.h from defining min/max macros that clash with Eigen.
-  $<$<BOOL:${WIN32}>:NOMINMAX>)
 
 target_precompile_headers(ACE_objects PRIVATE include/PCH.hpp)
 
