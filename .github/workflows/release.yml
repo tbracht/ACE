@@ -66,7 +66,12 @@ jobs:
         if: runner.os == 'Windows'
         shell: msys2 {0}
         run: >
-          cmake --preset ucrt64
+          cmake -B build
+          -G Ninja
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_C_COMPILER=/ucrt64/bin/gcc.exe
+          -DCMAKE_CXX_COMPILER=/ucrt64/bin/g++.exe
+          -DCMAKE_MAKE_PROGRAM=/ucrt64/bin/ninja.exe
           -DBUILD_PYTHON_BINDINGS=OFF
 
       - name: Build (Linux / macOS)
@@ -76,7 +81,7 @@ jobs:
       - name: Build (Windows)
         if: runner.os == 'Windows'
         shell: msys2 {0}
-        run: cmake --build --preset ucrt64 --target ACE_bin -j$(nproc)
+        run: cmake --build build --target ACE_bin -j$(nproc)
 
       - name: Upload binary artifact
         uses: actions/upload-artifact@v4.6.2
