@@ -1,4 +1,3 @@
-
 # ACE: 
 Code for numerically-exact simulations of open quantum systems
 using the Automated Compression of Environments (ACE) method
@@ -6,6 +5,21 @@ using the Automated Compression of Environments (ACE) method
 Original author: Moritz Cygorek
 
 # Installation:
+
+There are multiple installation methods available: you can build ACE yourself or download a python-packaged version using 
+```python
+pip install ACE-OQS
+```
+If the install is successfull, you can use ACE using
+```python
+import ACE
+```
+Take a look in the pybind/examples folder of this repository for examples using the python package!
+Note that on Windows, you might have to install the Visual C++ Redistributable for the import of the package to work: [Link to Download](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-supported-redistributable-version)
+
+# Building
+
+ACE uses cmake for building and depends on Eigen3 to work, make sure to install libeigen3-dev using your preferred package manager.
 
 ## Linux: 
 
@@ -16,8 +30,6 @@ The Eigen library has to available. The Makefile tries "/usr/include/eigen3/". I
 The Intel MKL is automatically used if set up correctly on the system.
 
 Successful compilation produces a binary "ACE" in the "bin" subdirectory
-
-If "pybind11" is installed, python bindings can be generated with "make pybind". See examples in pybind subdirectory.
 
 ## Windows: 
 
