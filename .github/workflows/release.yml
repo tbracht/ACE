@@ -35,6 +35,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4.2.2
 
+      - name: Set up MSYS2 UCRT64 (Windows)
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: false
+          install: >-
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-cmake
+            mingw-w64-ucrt-x86_64-ninja
+            mingw-w64-ucrt-x86_64-eigen3
+
       - name: Install Eigen (Linux)
         if: runner.os == 'Linux'
         run: sudo apt-get update -q && sudo apt-get install -y libeigen3-dev
@@ -42,8 +54,6 @@ jobs:
       - name: Install Eigen (macOS)
         if: runner.os == 'macOS'
         run: brew install eigen || true
-
-      # Eigen is fetched automatically via FetchContent on Windows
 
       - name: Configure (Linux / macOS)
         if: runner.os != 'Windows'
@@ -58,8 +68,6 @@ jobs:
         run: >
           cmake --preset ucrt64
           -DBUILD_PYTHON_BINDINGS=OFF
-        env:
-          MSYSTEM: UCRT64
 
       - name: Build (Linux / macOS)
         if: runner.os != 'Windows'
@@ -69,8 +77,6 @@ jobs:
         if: runner.os == 'Windows'
         shell: msys2 {0}
         run: cmake --build --preset ucrt64 --target ACE_bin -j$(nproc)
-        env:
-          MSYSTEM: UCRT64
 
       - name: Upload binary artifact
         uses: actions/upload-artifact@v4.6.2
