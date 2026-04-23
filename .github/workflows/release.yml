@@ -1,0 +1,127 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  # ── Build native ACE binary ─────────────────────────────────────────────────
+  build_binary:
+    name: Binary – ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact: ACE-linux-x86_64
+            binary: build/ACE
+          - os: macos-latest
+            artifact: ACE-macos
+            binary: build/ACE
+          - os: windows-latest
+            artifact: ACE-windows-x86_64
+            binary: build/ACE.exe
+
+    steps:
+      - uses: actions/checkout@v4.2.2
+
+      - name: Install Eigen (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update -q && sudo apt-get install -y libeigen3-dev
+
+      - name: Install Eigen (macOS)
+        if: runner.os == 'macOS'
+        run: brew install eigen || true
+
+      # Eigen is fetched automatically via FetchContent on Windows
+
+      - name: Configure (Linux / macOS)
+        if: runner.os != 'Windows'
+        run: >
+          cmake -B build
+          -DCMAKE_BUILD_TYPE=Release
+          -DBUILD_PYTHON_BINDINGS=OFF
+
+      - name: Configure (Windows)
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: >
+          cmake --preset ucrt64
+          -DBUILD_PYTHON_BINDINGS=OFF
+        env:
+          MSYSTEM: UCRT64
+
+      - name: Build (Linux / macOS)
+        if: runner.os != 'Windows'
+        run: cmake --build build --target ACE_bin -j$(nproc 2>/dev/null || sysctl -n hw.logicalcpu)
+
+      - name: Build (Windows)
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: cmake --build --preset ucrt64 --target ACE_bin -j$(nproc)
+        env:
+          MSYSTEM: UCRT64
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.binary }}
+
+  # ── Build Python wheels ─────────────────────────────────────────────────────
+#   build_wheels:
+#     name: Wheels – ${{ matrix.os }}
+#     runs-on: ${{ matrix.os }}
+#     strategy:
+#       fail-fast: false
+#       matrix:
+#         os: [ubuntu-latest, macos-latest, windows-latest]
+
+#     steps:
+#       - uses: actions/checkout@v4.2.2
+
+#       - name: Build wheels
+#         uses: pypa/cibuildwheel@v2.21
+
+#       - uses: actions/upload-artifact@v4.6.2
+#         with:
+#           name: wheels-${{ matrix.os }}
+#           path: ./wheelhouse/*.whl
+
+  # ── Publish to GitHub Releases ──────────────────────────────────────────────
+  github_release:
+    needs: [build_binary]
+    # needs: [build_binary, build_wheels]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # required to create/update releases and upload assets
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4.2.1
+        with:
+          path: artifacts/
+
+      # Zip each wheel collection so the release has one tidy file per platform
+    #   - name: Zip wheel collections
+    #     run: |
+    #       cd artifacts
+    #       for d in wheels-*/; do
+    #         zip -r "${d%/}.zip" "$d"
+    #       done
+
+      - name: Create GitHub Release and upload assets
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            artifacts/ACE-linux-x86_64/ACE
+            artifacts/ACE-macos/ACE
+            artifacts/ACE-windows-x86_64/ACE.exe
+
+        # artifacts/wheels-*.zip
