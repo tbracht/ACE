@@ -125,7 +125,7 @@ NB_MODULE(_ACE, m) {
          &ACE::FreePropagator::update,
          nb::call_guard<nb::gil_scoped_release>())
     .def_rw("propagate_Taylor",           &ACE::FreePropagator::propagate_Taylor)
-    .def_rw("propagate_system_threshold", &ACE::FreePropagator::propagate_system_threshold)
+    .def_rw("propagate_Taylor_threshold", &ACE::FreePropagator::propagate_Taylor_threshold)
     .def_rw("const_H",                    &ACE::FreePropagator::const_H)
     .def_rw("M",                          &ACE::FreePropagator::M)
     ;
