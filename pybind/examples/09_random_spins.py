@@ -86,6 +86,6 @@ plt.plot(times, data[:,0].real, label='S_x')
 plt.plot(times, data[:,1].real, label='S_y')
 plt.plot(times, data[:,2].real, label='S_z')
 plt.legend(loc="upper right")
-plt.show()
+plt.savefig("test_random_spins.png")
 
 

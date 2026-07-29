@@ -47,5 +47,5 @@ plt.plot( pulseShape[0], pulseShape[1].real, label='Pulse')
 plt.plot(times, data[:,0].real, label='Occupation')
 plt.plot(times, data[:,1].imag, label='Coherence')
 plt.legend(loc="upper right")
-plt.show()
+plt.savefig("test_pulse.png")
 

@@ -79,6 +79,6 @@ ax.plot(times, data[:,1].real, label='|g,1>')
 ax.plot(times, data[:,2].real, label='|e,1>')
 ax.plot(times, data[:,3].real, label='|g,2>')
 ax.legend(loc="upper right")
-plt.show()
+plt.savefig("test_cQED.png")
 
 

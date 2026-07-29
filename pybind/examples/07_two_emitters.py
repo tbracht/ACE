@@ -41,6 +41,7 @@ fprop.apply_Operator_right(0, np.kron(KetBra(1,0,2),np.eye(2,2))+np.kron(np.eye(
 PT    = ProcessTensors()
 
 outp  = OutputPrinter([(np.kron(KetBra(1,0,2),np.eye(2))+np.kron(np.eye(2),KetBra(1,0,2)))@(np.kron(KetBra(0,1,2),np.eye(2))+np.kron(np.eye(2),KetBra(0,1,2)))])
+# outp2  = OutputPrinter([(np.kron(KetBra(1,0,2),np.eye(2))+np.kron(np.eye(2),KetBra(1,0,2)))@(np.kron(KetBra(0,1,2),np.eye(2))+np.kron(np.eye(2),KetBra(0,1,2)))])
 
 # First: calculate without phonons:
 Simulation(fprop, PT, initial, tgrid, outp)
@@ -68,7 +69,7 @@ plt.title("Rabi rotations")
 plt.plot(times, data0[:,0].real, label='G2 without phonons')
 plt.plot(times, data1[:,0].real, label='G2 with phonons')
 plt.legend(loc="upper right")
-plt.show()
+plt.savefig("test_two_emitters.png")
 
 
 

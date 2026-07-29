@@ -73,6 +73,6 @@ ax[1].set(xlabel="Energy (meV)")
 ax[1].set_xlim([-3,3])
 ax[1].set_yscale("log")
 ax[1].plot(np.multiply(2*np.pi*hbar,freqs), spectrum.real)
-plt.show()
+plt.savefig("test_Mollow_spectra.png")
 
 

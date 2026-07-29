@@ -103,7 +103,7 @@ ax.plot(times_PT, data_PT[:,0].real, 'x', label='PT')
 ax.plot(times_QUAPI, data_QUAPI[:,0].real, '+', label='QUAPI')
 ax.plot(times_TEMPO, data_TEMPO[:,0].real, label='TEMPO')
 ax.legend(loc="upper right")
-plt.show()
+plt.savefig("test_quapi.png")
 
 
 

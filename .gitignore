@@ -3,3 +3,9 @@ venv/
 __pycache__/
 *.egg-info/
 docs/
+*.out
+*.png
+*.pt_initial
+*.pt_initial_0
+*.pt_repeated
+*.pt_repeated_0
