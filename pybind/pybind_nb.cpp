@@ -27,10 +27,10 @@
 #include <nanobind/eigen/dense.h>
 
 #include <memory>
-
 #include "Simulation_PT.hpp"
 #include "Simulation_QUAPI.hpp"
 #include "FreePropagator.hpp"
+#include "TimeGrid.hpp"
 #include "ModePropagatorGenerator_SingleModes.hpp"
 #include "DynamicalMap.hpp"
 #include "ReadExpression.hpp"
@@ -127,6 +127,30 @@ NB_MODULE(_ACE, m) {
     .def("update",
          &ACE::FreePropagator::update,
          nb::call_guard<nb::gil_scoped_release>())
+    .def("get_M_timegrid",
+         [](ACE::FreePropagator& self, const ACE::TimeGrid& tgrid) {
+           nb::gil_scoped_release release;
+           std::vector<Eigen::MatrixXcd> Ms;
+           Ms.reserve(tgrid.n_tot);
+           for (int n = 0; n < tgrid.n_tot; ++n) {
+             self.update(tgrid.get_t(n), tgrid.get_dt(n));
+             Ms.push_back(self.M);
+           }
+           return Ms;
+         },
+         nb::arg("tgrid"))
+    .def("get_M_timegrid",
+         [](ACE::FreePropagator& self, const std::vector<double>& times, double dt) {
+           nb::gil_scoped_release release;
+           std::vector<Eigen::MatrixXcd> Ms;
+           Ms.reserve(times.size());
+           for (double t : times) {
+             self.update(t, dt);
+             Ms.push_back(self.M);
+           }
+           return Ms;
+         },
+         nb::arg("times"), nb::arg("dt"))
     .def_rw("propagate_Taylor",           &ACE::FreePropagator::propagate_Taylor)
     .def_rw("propagate_Taylor_threshold", &ACE::FreePropagator::propagate_Taylor_threshold)
     .def_rw("const_H",                    &ACE::FreePropagator::const_H)
