@@ -19,6 +19,7 @@ InitialState   = _c.InitialState
 TimeGrid       = _c.TimeGrid
 OutputPrinter  = _c.OutputPrinter
 Simulation     = _c.Simulation
+DynamicalMap    = _c.DynamicalMap
 
 # ── Common sigma matrices ─────────────────────────────────────────────
 ACE_sigma_p = np.array([[0, 0], [1, 0]], dtype=complex)
